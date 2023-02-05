@@ -1,13 +1,13 @@
 package com.maciejwalkowiak.testcontainers.localstack;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Bucket;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
 class LocalStackContainerTests {

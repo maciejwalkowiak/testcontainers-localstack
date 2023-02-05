@@ -160,9 +160,6 @@
 						<configuration>
 							<java>
 								<importOrder />
-								<eclipse>
-									<file>${project.basedir}/eclipse-code-formatter.xml</file>
-								</eclipse>
 								<removeUnusedImports/>
 							</java>
 						</configuration>
