@@ -9,9 +9,6 @@
   <packaging>jar</packaging>
   <name>testcontainers-localstack</name>
   <description>Testcontainers integration with Localstack</description>
-  <prerequisites>
-    <maven>${maven.version}</maven>
-  </prerequisites>
 
   <url>https://github.com/maciejwalkowiak/testcontainers-localstack/</url>
   <scm>
@@ -38,6 +35,13 @@
       <version>16.0.2</version>
       <scope>compile</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>localstack</artifactId>
+      <version>1.17.6</version>
+    </dependency>
+
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
