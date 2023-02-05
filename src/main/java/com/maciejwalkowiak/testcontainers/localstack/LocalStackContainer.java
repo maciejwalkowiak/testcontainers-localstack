@@ -13,6 +13,9 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
 public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
 
@@ -120,13 +123,16 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
     public URI getEndpointOverride() {
         try {
             final String address = getHost();
-            String ipAddress = address;
             // resolve IP address and use that as the endpoint so that path-style access is automatically used for S3
-            ipAddress = InetAddress.getByName(address).getHostAddress();
+            String ipAddress = InetAddress.getByName(address).getHostAddress();
             return new URI("http://" + ipAddress + ":" + getMappedPort(PORT));
         } catch (UnknownHostException | URISyntaxException e) {
             throw new IllegalStateException("Cannot obtain endpoint URL", e);
         }
+    }
+
+    public AwsCredentialsProvider getCredentialsProvider() {
+        return StaticCredentialsProvider.create(AwsBasicCredentials.create(getAccessKey(), getSecretKey()));
     }
 
     /**
@@ -181,6 +187,14 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
      */
     public String getRegion() {
         return this.getEnvMap().getOrDefault("DEFAULT_REGION", DEFAULT_REGION);
+    }
+
+    public SyncClients clients() {
+        return new SyncClients(this);
+    }
+
+    public AsyncClients asyncClients() {
+        return new AsyncClients(this);
     }
 
     public interface EnabledService {
