@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.rnorth.ducttape.Preconditions;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -25,14 +24,13 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
 
     private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("localstack/localstack");
 
-    private static final String DEFAULT_TAG = "0.11.2";
+    private static final String DEFAULT_TAG = "1.3.1";
 
     private static final String DEFAULT_REGION = "us-east-1";
 
     /**
      * @deprecated use {@link LocalStackContainer (DockerImageName)} instead
      */
-    @Deprecated
     public LocalStackContainer() {
         this(DEFAULT_IMAGE_NAME.withTag(DEFAULT_TAG));
     }
@@ -108,10 +106,6 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
         return self();
     }
 
-    public URI getEndpointOverride(LocalStackContainer.Service service) {
-        return getEndpointOverride((LocalStackContainer.EnabledService) service);
-    }
-
     /**
      * Provides an endpoint override that is preconfigured to communicate with a given simulated service.
      * The provided endpoint override should be set in the AWS Java SDK v2 when building a client, e.g.:
@@ -128,23 +122,18 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
      * that are running on the test host. If other containers need to call this one, they should be configured
      * specifically to do so using a Docker network and appropriate addressing.</strong></p>
      *
-     * @param service the service that is to be accessed
      * @return an {@link URI} endpoint override
      */
-    public URI getEndpointOverride(LocalStackContainer.EnabledService service) {
+    public URI getEndpointOverride() {
         try {
             final String address = getHost();
             String ipAddress = address;
             // resolve IP address and use that as the endpoint so that path-style access is automatically used for S3
             ipAddress = InetAddress.getByName(address).getHostAddress();
-            return new URI("http://" + ipAddress + ":" + getMappedPort(getServicePort(service)));
+            return new URI("http://" + ipAddress + ":" + getMappedPort(PORT));
         } catch (UnknownHostException | URISyntaxException e) {
             throw new IllegalStateException("Cannot obtain endpoint URL", e);
         }
-    }
-
-    private int getServicePort(LocalStackContainer.EnabledService service) {
-        return PORT;
     }
 
     /**
