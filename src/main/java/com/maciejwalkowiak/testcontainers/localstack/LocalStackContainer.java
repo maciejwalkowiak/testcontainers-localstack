@@ -10,16 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.rnorth.ducttape.Preconditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.ComparableVersion;
 import org.testcontainers.utility.DockerImageName;
 
 public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
-    private static final Logger log = LoggerFactory.getLogger(LocalStackContainer.class);
 
     static final int PORT = 4566;
 
@@ -32,20 +28,6 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
     private static final String DEFAULT_TAG = "0.11.2";
 
     private static final String DEFAULT_REGION = "us-east-1";
-
-    /**
-     * Whether or to assume that all APIs run on different ports (when <code>true</code>) or are
-     * exposed on a single port (<code>false</code>). From the Localstack README:
-     *
-     * <blockquote>Note: Starting with version 0.11.0, all APIs are exposed via a single edge
-     * service [...] The API-specific endpoints below are still left for backward-compatibility but
-     * may get removed in a future release - please reconfigure your client SDKs to start using the
-     * single edge endpoint URL!</blockquote>
-     * <p>
-     * Testcontainers will use the tag of the docker image to infer whether or not the used version
-     * of Localstack supports this feature.
-     */
-    private final boolean legacyMode;
 
     /**
      * @deprecated use {@link LocalStackContainer (DockerImageName)} instead
@@ -67,39 +49,11 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
      * @param dockerImageName    image name to use for Localstack
      */
     public LocalStackContainer(final DockerImageName dockerImageName) {
-        this(dockerImageName, shouldRunInLegacyMode(dockerImageName.getVersionPart()));
-    }
-
-    /**
-     * @param dockerImageName    image name to use for Localstack
-     * @param useLegacyMode      if true, each AWS service is exposed on a different port
-     */
-    public LocalStackContainer(final DockerImageName dockerImageName, boolean useLegacyMode) {
         super(dockerImageName);
         dockerImageName.assertCompatibleWith(DEFAULT_IMAGE_NAME);
 
-        this.legacyMode = useLegacyMode;
-
         withFileSystemBind(DockerClientFactory.instance().getRemoteDockerUnixSocketPath(), "/var/run/docker.sock");
         waitingFor(Wait.forLogMessage(".*Ready\\.\n", 1));
-    }
-
-    private static boolean shouldRunInLegacyMode(String version) {
-        if (version.equals("latest")) {
-            return false;
-        }
-
-        ComparableVersion comparableVersion = new ComparableVersion(version);
-        if (comparableVersion.isSemanticVersion()) {
-            boolean versionRequiresLegacyMode = comparableVersion.isLessThan("0.11");
-            return versionRequiresLegacyMode;
-        }
-
-        log.warn("Version {} is not a semantic version, LocalStack will run in legacy mode.", version);
-        log.warn(
-                "Consider using \"LocalStackContainer(DockerImageName dockerImageName, boolean legacyMode)\" constructor if you want to disable legacy mode."
-        );
-        return true;
     }
 
     @Override
@@ -134,7 +88,7 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
     }
 
     private void exposePorts() {
-        services.stream().map(this::getServicePort).distinct().forEach(this::addExposedPort);
+        this.addExposedPort(PORT);
     }
 
     public LocalStackContainer withServices(
@@ -190,7 +144,7 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
     }
 
     private int getServicePort(LocalStackContainer.EnabledService service) {
-        return legacyMode ? service.getPort() : PORT;
+        return PORT;
     }
 
     /**
