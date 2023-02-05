@@ -60,10 +60,10 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
     protected void configure() {
         super.configure();
 
-        Preconditions.check("services list must not be empty", !services.isEmpty());
-
-        withEnv("SERVICES", services.stream().map(LocalStackContainer.EnabledService::getName).collect(
-                Collectors.joining(",")));
+        if (!services.isEmpty()) {
+            withEnv("SERVICES", services.stream().map(LocalStackContainer.EnabledService::getName).collect(
+                    Collectors.joining(",")));
+        }
 
         String hostnameExternalReason;
         if (getEnvMap().containsKey(HOSTNAME_EXTERNAL_ENV_VAR)) {
@@ -207,10 +207,6 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
         }
 
         String getName();
-
-        default int getPort() {
-            return PORT;
-        }
     }
 
     public enum Service implements LocalStackContainer.EnabledService {
