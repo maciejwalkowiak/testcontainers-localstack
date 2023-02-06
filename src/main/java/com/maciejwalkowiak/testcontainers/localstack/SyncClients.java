@@ -3,24 +3,32 @@ package com.maciejwalkowiak.testcontainers.localstack;
 import org.testcontainers.shaded.com.google.common.base.Preconditions;
 import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sqs.SqsClient;
 
 public class SyncClients {
-	private final LocalStackContainer localstack;
+	private final AwsClientConfigurer configurer;
 
-	public SyncClients(LocalStackContainer localstack) {
-		Preconditions.checkNotNull(localstack);
-		this.localstack = localstack;
+	public SyncClients(AwsClientConfigurer configurer) {
+		Preconditions.checkNotNull(configurer);
+		this.configurer = configurer;
 	}
 
 	public S3Client s3() {
-		return configure(S3Client.builder()).build();
+		return configurer.configure(S3Client.builder()).build();
 	}
 
-	public <T extends AwsClientBuilder<?, ?>> T configure(T builder) {
-		builder.endpointOverride(localstack.getEndpointOverride())
-			.credentialsProvider(localstack.getCredentialsProvider())
-			.region(Region.of(localstack.getRegion()));
-		return builder;
+	public SnsClient sns() {
+		return configurer.configure(SnsClient.builder()).build();
+	}
+
+	public DynamoDbClient dynamoDb() {
+		return configurer.configure(DynamoDbClient.builder()).build();
+	}
+
+	public SqsClient sqs() {
+		return configurer.configure(SqsClient.builder()).build();
 	}
 }

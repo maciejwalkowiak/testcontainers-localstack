@@ -27,6 +27,8 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
 
     private final List<LocalStackContainer.EnabledService> services = new ArrayList<>();
 
+    private final AwsClientConfigurer clientConfigurer = new AwsClientConfigurer(this);
+
     private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("localstack/localstack");
 
     private static final String DEFAULT_TAG = "1.3.1";
@@ -192,11 +194,11 @@ public class LocalStackContainer extends GenericContainer<LocalStackContainer> {
     }
 
     public SyncClients clients() {
-        return new SyncClients(this);
+        return new SyncClients(clientConfigurer);
     }
 
     public AsyncClients asyncClients() {
-        return new AsyncClients(this);
+        return new AsyncClients(clientConfigurer);
     }
 
     public S3Presigner s3Presigner() {
