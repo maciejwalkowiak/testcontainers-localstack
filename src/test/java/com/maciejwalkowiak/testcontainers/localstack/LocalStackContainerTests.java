@@ -8,6 +8,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Testcontainers
 class LocalStackContainerTests {
@@ -39,6 +40,12 @@ class LocalStackContainerTests {
         assertThat(s3Client.listBuckets().join().buckets())
                 .extracting(Bucket::name)
                 .contains("async-bucket");
+    }
+
+    @Test
+    void configuresS3Presigner() {
+        S3Presigner s3Presigner = localstack.s3Presigner();
+        assertThat(s3Presigner).isNotNull();
     }
 
 }
