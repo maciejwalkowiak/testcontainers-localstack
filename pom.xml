@@ -25,9 +25,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<spotless.version>2.27.2</spotless.version>
-		<awssdk-v2.version>2.19.25</awssdk-v2.version>
-		<testcontainers.version>1.17.6</testcontainers.version>
+		<spotless.version>2.36.0</spotless.version>
+		<awssdk-v2.version>2.20.41</awssdk-v2.version>
+		<testcontainers.version>1.18.0</testcontainers.version>
 	</properties>
 
 	<dependencyManagement>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.9.0</version>
+			<version>5.9.2</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -210,7 +210,7 @@
 					<plugin>
 						<groupId>org.jreleaser</groupId>
 						<artifactId>jreleaser-maven-plugin</artifactId>
-						<version>1.3.1</version>
+						<version>1.5.1</version>
 						<configuration>
 							<jreleaser>
 								<signing>

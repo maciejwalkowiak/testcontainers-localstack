@@ -1,8 +1,6 @@
 package com.maciejwalkowiak.testcontainers.localstack;
 
 import org.testcontainers.shaded.com.google.common.base.Preconditions;
-import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.sns.SnsClient;

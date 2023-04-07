@@ -1,10 +1,8 @@
 package com.maciejwalkowiak.testcontainers.localstack;
 
 import java.util.function.Consumer;
-
 import org.testcontainers.shaded.com.google.common.base.Preconditions;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.sns.SnsAsyncClient;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
